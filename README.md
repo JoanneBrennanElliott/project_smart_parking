@@ -1,2 +1,4 @@
 # project_smart_parking
-My Smart Parking System built for NCI project semester,  implementing gRPC microservices, a Node.js bridge, and a simple GUI for user interaction.
+A Smart Parking System built for the National College of Ireland project.
+Includes real-time occupancy monitoring, disabled space pre-booking, ANPR/QR-based entry,  15‑minute free parking alerts, valet parking location tracking, and a Find‑My‑Car feature.  
+Implements gRPC microservices, a Node.js bridge, and a clean GUI for user interaction.
