@@ -1,0 +1,19 @@
+syntax = "proto3"; 
+
+package smartparking; 
+
+// Service Definition  
+
+service SmartParkingService {
+
+  // ---- Unary RPCs ---- 
+  rpc GetSpaceStatus(SpaceStatusRequest) returns (SpaceStatusResponse); 
+
+  rpc BookDisabledSpace(BookingRequest) returns (BookingConfirmation);
+
+  rpc StartParkingTimer(TimerStartRequest) returns (TimerStatus);
+
+//server-side streaming
+rpc StreamParkingTimer(TimerRequest) returns (stream TimerResponse);
+}
+
