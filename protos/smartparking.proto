@@ -11,9 +11,74 @@ service SmartParkingService {
 
   rpc BookDisabledSpace(BookingRequest) returns (BookingConfirmation);
 
+ rpc BookSpace(BookingRequest) returns (BookingConfirmation);
+
   rpc StartParkingTimer(TimerStartRequest) returns (TimerStatus);
 
 //server-side streaming
 rpc StreamParkingTimer(TimerRequest) returns (stream TimerResponse);
 }
 
+//service MachineStatusService {
+//	rpc CheckMachineStatus (MachineRequest) returns (MachineResponse);
+//}
+
+
+ 
+
+// Message Definitions
+// ---- Parking Space Status ---- 
+
+message SpaceStatusRequest { 
+  string spaceId = 1; 
+} 
+
+message SpaceStatusResponse {
+  string spaceId = 1; 
+  bool isOccupied = 2; 
+  bool isDisabledSpace = 3; 
+  string zone = 4; 
+
+} 
+
+// ---- Regular / Disabled Space Booking ---- 
+
+message BookingRequest { 
+  string userId = 1; 
+  string spaceId = 2; 
+} 
+
+message BookingConfirmation { 
+
+  bool success = 1; 
+  string message = 2; 
+  string spaceId = 3; 
+string timestampExpiry = 4;
+string userId = 5;
+} 
+
+// ---- Parking Timer ---- 
+
+message TimerStartRequest { 
+  string userId = 1; 
+  string entryTimestamp = 2; 
+} 
+
+message TimerStatus { 
+  string timeRemaining = 1; 
+  bool nearingExpiry = 2; 
+} 
+
+
+//TimerRequest
+message TimerRequest { 
+  string userId = 1; 
+  string entryTimestamp = 2; 
+} 
+
+
+// countdown timer 
+message TimerResponse {
+  string timeRemaining = 1;
+  bool nearingExpiry = 2;
+}
