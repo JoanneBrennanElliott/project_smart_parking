@@ -46,6 +46,7 @@ message SpaceStatusResponse {
 message BookingRequest { 
   string userId = 1; 
   string spaceId = 2; 
+  string carReg = 3;
 } 
 
 message BookingConfirmation { 
@@ -53,8 +54,10 @@ message BookingConfirmation {
   bool success = 1; 
   string message = 2; 
   string spaceId = 3; 
-string timestampExpiry = 4;
-string userId = 5;
+string carReg = 4;
+string timestampExpiry = 5;
+string userId = 6;
+string bookingRef = 7; 
 } 
 
 // ---- Parking Timer ---- 
