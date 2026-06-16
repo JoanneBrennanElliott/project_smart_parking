@@ -74,9 +74,12 @@ function getLogFileName() {
 function BookSpace(call, callback) {
 	
 	const userId = call.request.userId;
+	const carReg = call.request.carReg;
 	const { zone, spaceId }  = generateStandardSpaceId();  // STAFF / VISITOR
 
-    const success = true;
+	const bookingRef = generateBookingRef();
+   
+	const success = true;
     const message = "successful booking";
 	
    const timestampExpiry = CurrentTimestamp();
@@ -89,27 +92,32 @@ function BookSpace(call, callback) {
     });
 	   
 	
-	console.log(
-    `NEW STANDARD BOOKING → ${spaceId} | Zone: ${zone} | Booked: ${CurrentTimestamp()}`
-	);
+console.log(
+    `NEW STANDARD BOOKING : ${spaceId} | Zone: ${zone} | User: ${userId} | Car: ${carReg} | Booked: ${CurrentTimestamp()}`
+);
 
-//	logToFile(`Booked: ${spaceId} | Zone: ${zone} | Disabled: true`);
-	}
+logToFile(`Booked: ${spaceId} | Zone: ${zone} | User: ${userId} | Car: ${carReg} | Disabled: false`);
+}
     callback(null, {
 		success,
 		message,
 		spaceId,
 		timestampExpiry,
-		userId
+		userId,
+		carReg,
+		bookingRef
 		});
 	}
 
-  
+    
 function bookDisabledSpace(call, callback) { 
 
 	const userId = call.request.userId;
+	 const carReg = call.request.carReg; 
     const { zone, spaceId } = generateDisabledSpaceId();  
    
+    const bookingRef = generateBookingRef();
+	
 	const success = Math.random() > 0.3;
 	const message = success? "successful booking "  : "Not confirmed- issue";
 	const timestampExpiry = CurrentTimestamp();
@@ -122,8 +130,9 @@ function bookDisabledSpace(call, callback) {
        timestampBooked: CurrentTimestamp()
 	   });
 	   
-	   	console.log(
-		`NEW DISABLED BOOKING → ${spaceId} | Zone: ${zone} | Booked: ${CurrentTimestamp()}`
+
+	console.log(
+		`NEW DISABLED BOOKING : ${spaceId} | Zone: ${zone} | User: ${userId} | Car: ${carReg} | Booked: ${CurrentTimestamp()}`
 	);
 
 	}
@@ -132,10 +141,12 @@ function bookDisabledSpace(call, callback) {
 		message,
 		spaceId,
 		timestampExpiry,
-		userId
+		userId, 
+		carReg,
+		bookingRef
 	});
 	
-	//logToFile(`Booked: ${spaceId} | Zone: ${zone} | Disabled: true`);
+logToFile(`Booked: ${spaceId} | Zone: ${zone} | User: ${userId} | Car: ${carReg} | Disabled: true`);
 
 }
 //Implement service methods (unary signature: (call, callback)) 
