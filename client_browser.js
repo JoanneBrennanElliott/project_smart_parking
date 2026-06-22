@@ -118,6 +118,73 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 				
 });
 
+
+document.addEventListener("DOMContentLoaded", () => {
+document.getElementById("registerBtn").addEventListener("click", () => {
+    
+
+    const username = document.getElementById("loginName").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+ 
+    fetch("/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    })
+    .then(res => res.json())
+    .then(result => {
+    	
+        if (result.success) {
+
+		    const statusBox = document.getElementById("statusBox");
+			const loginStatus = document.getElementById("loginStatus");
+	
+		    document.getElementById("loginStatus").textContent = "";
+			document.getElementById("loginStatus").className = "";
+			
+			loginStatus.textContent = "";
+			loginStatus.className = "";
+            loginStatus.className = "success";
+            loginStatus.textContent = "Registration successful — you can now log in";
+            loginStatus.className = "success";
+			
+			document.getElementById("findCarResult").textContent = "";
+			document.getElementById("findCarResult").className = "";		
+
+			const loginBtn = document.getElementById("loginBtn");
+			const registerBtn = document.getElementById("registerBtn");
+
+			// Re-enable login button
+			loginBtn.disabled = false;
+			  
+			// Restore hover effect
+			loginBtn.classList.remove("no-hover");
+
+			// Hide register button again
+			registerBtn.style.display = "none";
+			registerBtn.disabled = true;
+			// Focus login button
+			loginBtn.focus();
+        } 
+		if (!result.success) {
+
+			loginStatus.textContent = result.message;
+			loginStatus.className = "error";
+			
+			document.getElementById("findCarBtn").disabled = true;
+			
+			if (result.message === "Username already exists") {
+				const loginName = document.getElementById("loginName");
+				loginName.focus();
+				loginName.select();
+			}
+			return;
+		}
+    });
+
+});
+});
+
 document.getElementById("logoutBtn").addEventListener("click", () => {
 
     fetch("/logout", {
