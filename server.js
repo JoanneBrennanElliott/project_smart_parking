@@ -385,3 +385,10 @@ function generateStandardSpaceId() {
         zone,
         spaceId: `${zone}-${String(number).padStart(3, "0")}`
     };	}
+
+
+function generateBookingRef() {
+    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const date = new Date().toISOString().slice(0,10).replace(/-/g, "");
+    return `BK-${date}-${random}`;
+}
