@@ -10,6 +10,114 @@ function updateStatus(message, type = "success") {
 	box.classList.add(type);
 }
 
+document.getElementById("loginBtn").addEventListener("click", async () => {
+
+	
+   const username = document.getElementById("loginName").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+	
+	document.getElementById("findCarBtn").disabled = false;
+
+	
+	const loginStatus = document.getElementById("loginStatus");
+
+	 try {
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+        });
+
+		const text = await response.text();
+
+		let result;
+		try {
+			result = JSON.parse(text);
+		} catch (jsonErr) {
+			console.error("JSON parse error:", jsonErr);
+			loginStatus.textContent = "Server returned invalid - please run from localhost:3000";
+			loginStatus.className = "error";
+			return;
+		}
+	
+		if (result.success) {
+			const username = result.userId;  
+			 if (result.returning) {
+				//loginStatus.textContent = `Welcome back, ${username}!`;	
+				//loginStatus.textContent = `Welcome back, ${username}! Last login: ${result.lastLogin}`;
+				const pretty = formatLastLogin(result.lastLogin);
+
+				loginStatus.textContent = `Welcome back, ${result.userId}! Last login: ${pretty}`;
+
+				loginStatus.className = "success";
+			 } else {
+				loginStatus.textContent = `Welcome, ${username}!`;
+				loginStatus.className = "success";
+			 }
+			 
+			const panel = document.getElementById("loginPanel");
+			
+			// Enable reg box
+			const carReg = document.getElementById("carReg");
+			carReg.disabled = false;
+
+				// Optional: auto-focus it
+			carReg.focus();
+			panel.classList.add("fadeOut");
+			
+			document.getElementById("loggedInUserDisplay").textContent =
+			`Logged in as: ${username}`;
+
+			
+			document.getElementById("bookBtn").disabled = false;
+			document.getElementById("bookDisabledBtn").disabled = false;
+			
+			document.getElementById("logoutBtn").style.display = "block";
+
+			// Remove panel after fade completes
+			setTimeout(() => {panel.style.display = "none";}, 600); 
+		
+		} 
+		else {
+			if (result.message === "User not found") {
+//				loginStatus.textContent = "User not found — would you like to register?";
+				 loginStatus.textContent = "User not found — check your spelling or register below";
+				 loginStatus.className = "error";
+
+				const registerBtn = document.getElementById("registerBtn");
+				const loginBtn = document.getElementById("loginBtn");
+
+				document.getElementById("findCarBtn").disabled = true;
+				
+				// Show + enable register button
+				registerBtn.style.display = "block";
+				registerBtn.disabled = false;
+
+				loginBtn.disabled = false;
+				//loginBtn.classList.add("no-hover");
+
+				//registerBtn.focus();
+				
+
+				registerBtn.style.display = "block";
+				//registerBtn.focus();
+
+			} else {
+
+				loginStatus.textContent = "Login Unsuccessful";
+				loginStatus.className = "error";
+			}
+		}
+		
+	 } catch (err) {
+        loginStatus.textContent = "Server Error";
+        loginStatus.className = "error";
+		  
+		console.error("LOGIN ERROR:", err);
+		}
+				
+});
+
 document.getElementById("startBtn").addEventListener("click", () => {
     const entryTimestamp = new Date().toISOString();
 
