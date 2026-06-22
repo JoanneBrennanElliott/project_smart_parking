@@ -183,6 +183,34 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
     .catch(err => console.error("Logout error:", err));
 });
 
+//Standard Parking Space
+document.getElementById("bookBtn").addEventListener("click", () => {
+	
+	const carReg = document.getElementById("carReg").value.trim();
+		
+    fetch("http://localhost:3000/bookSpace", 
+	{ 
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ carReg })
+		})
+		
+        .then(res => res.json())
+        .then(data => {
+			const type = data.success ? "success" : "error";
+			updateStatus(
+                `Standard Space: ${data.message}
+				\nUser: ${data.userId}
+			    \nCar Reg: ${data.carReg}
+				\nSpace: ${data.spaceId}
+				\nRef: ${data.bookingRef}
+				\n Time: ${data.timestampExpiry}`,type);
+        })      
+        .catch(err => {
+            updateStatus("Error booking standard space", "error");
+            console.error(err);
+        });
+});
 
 document.getElementById("startBtn").addEventListener("click", () => {
     const entryTimestamp = new Date().toISOString();
