@@ -402,12 +402,24 @@ document.getElementById("startBtn").addEventListener("click", () => {
 */
 
 
-
 document.getElementById("stopBtn").addEventListener("click", () => {
-    if (eventSource) {
-        eventSource.close();
-        document.getElementById("timerDisplay").textContent = "Timer stopped";
+//    if (eventSource) {
+//        eventSource.close();
+//        document.getElementById("timerDisplay").textContent = "Timer stopped";
+//    }
+   if (window.eventSource) {
+        window.eventSource.close();
+        window.eventSource = null;
     }
+
+    document.getElementById("timerDisplay").textContent = "Timer stopped";
+    //document.getElementById("timerDisplay").classList.remove("warning");
+	const bar = document.getElementById("progressBar");
+    bar.style.width = "100%";
+    bar.classList.remove("warning", "expired");
+	
+    console.log("Timer manually stopped");
+
 });
 
 
