@@ -118,6 +118,23 @@ function logToFile(text) {
     }
 }
 
+app.post("/logout", (req, res) => {
+ 
+    if (!currentLoggedInUser) {
+         console.log("No logged-in user");
+        return res.json({ success: false, message: "Not logged in" });    }
+
+    // Log the audit entry
+    logAudit(currentLoggedInUser, "Logged out");
+
+    console.log(`User '${currentLoggedInUser}' logged out`);
+
+    // Clear the server-side session variable
+    currentLoggedInUser = null;
+
+    return res.json({ success: true, message: "Logout successful" });
+});
+
 function getLogFileName() {
     const now = new Date();
     const year = now.getFullYear();
