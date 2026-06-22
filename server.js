@@ -33,6 +33,63 @@ server.bindAsync(
   }
 );
   
+app.post("/login", (req, res) => {
+    const { username, password } = req.body;
+
+	db.get(
+		
+		"SELECT * FROM users WHERE username = ?",
+		[username],
+		(err, row) => {
+ 			if (err) {
+                console.error("DB ERROR in /login:", err);
+                return res.json({ success: false, message: "Database error" });
+            }
+
+            if (!row) {
+                console.log(`LOGIN FAIL : User '${username}' not found`);
+				logAudit(username, "Login attempt for non‑existent user");
+                return res.json({ success: false, message: "User not found" });
+            }
+				
+			//adding password hashing
+			bcrypt.compare(password, row.password, (err, match) => {
+
+				if (err) {
+					console.error("Compare error:", err);
+					logAudit(username, "Failed login attempt");
+					return res.json({ success: false, message: "Error checking password" });
+				}
+
+				if (!match) {
+					console.log(`LOGIN FAIL : Incorrect password for '${username}'`);
+					logAudit(username, "Failed login attempt");
+					return res.json({ success: false, message: "Incorrect password" });
+				}
+				
+				const isReturning = row.hasLoggedInBefore   === 1;
+				
+				const lastLogin = row.last_time_login;
+				currentLoggedInUser = row.username;
+
+				//added last_time_login into users table
+				    db.run( "UPDATE users SET hasLoggedInBefore   = 1, last_time_login = datetime('now', 'localtime') WHERE username = ?",
+                    [row.username],
+                    (updateErr) => {
+                        if (updateErr) {
+                            console.error("DB update error:", updateErr);
+						}
+                    });		
+					//logAudit(row.username, "Successful login");
+					logAudit(username, "Successful login");
+
+					return res.json({success: true,userId: row.username, 
+						returning: isReturning,
+						lastLogin: row.last_time_login});
+
+			});
+		});
+});
   
 const bookedSpaces = new Map();
 // key: "PATIENT-044"
