@@ -118,6 +118,72 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 				
 });
 
+document.getElementById("logoutBtn").addEventListener("click", () => {
+
+    fetch("/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    })
+    .then(res => res.json())
+    .then(result => {
+        console.log("Logout response:", result);
+
+        // Even if backend says "not logged in", still reset UI
+        // because user clicked logout intentionally
+        const popup = document.getElementById("logoutPopup");
+        popup.classList.add("show");
+
+        // Hide popup after 2 seconds
+        setTimeout(() => { popup.classList.remove("show"); }, 2000);
+
+        const panel = document.getElementById("loginPanel");
+
+        // Reset login fields
+        document.getElementById("loginName").value = "admin";
+        document.getElementById("loginPassword").value = "1234";
+        document.getElementById("loginStatus").textContent = "Please enter your login details";
+        document.getElementById("loginStatus").className = "";
+
+        // Clear user display
+        document.getElementById("loggedInUserDisplay").textContent = "";
+
+        // Clear Find My Car
+        document.getElementById("findCarResult").textContent = "";
+        document.getElementById("findCarResult").className = "";
+        document.getElementById("findCarBtn").disabled = true;
+
+        // Disable booking buttons
+        document.getElementById("bookBtn").disabled = true;
+        document.getElementById("bookDisabledBtn").disabled = true;
+
+        // Disable navigation
+        document.getElementById("navigateToCarBtn").disabled = true;
+        window.lastCarZone = "";
+        window.lastCarSpace = "";
+
+        // Hide logout button
+        document.getElementById("logoutBtn").style.display = "none";
+
+        // Disable register button
+        registerBtn.disabled = true;
+
+        // Clear car reg
+        document.getElementById("carReg").value = "";
+
+        // Clear status box
+        const statusBox = document.getElementById("statusBox");
+        statusBox.textContent = "";
+        statusBox.className = "";
+
+        // Bring login panel back
+        panel.style.display = "block";
+        panel.classList.remove("fadeOut");
+        panel.style.opacity = "1";
+    })
+    .catch(err => console.error("Logout error:", err));
+});
+
+
 document.getElementById("startBtn").addEventListener("click", () => {
     const entryTimestamp = new Date().toISOString();
 
