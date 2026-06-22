@@ -212,6 +212,36 @@ document.getElementById("bookBtn").addEventListener("click", () => {
         });
 });
 
+//Disabled Parking Space
+document.getElementById("bookDisabledBtn").addEventListener("click", () => {
+    
+	 const carReg = document.getElementById("carReg").value.trim();
+	 
+	 fetch("http://localhost:3000/bookDisabledSpace", 
+	{ 
+	 method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ carReg })
+	})
+        .then(res => res.json())
+        .then(data => {
+		const type = data.success ? "success" : "error";
+//		updateStatus("Disabled Space: " + data.message, "success");
+			updateStatus(
+                `Disabled Space: ${data.message}
+				\n User: ${data.userId}
+				\nCar Reg: ${data.carReg}
+				\n Space: ${data.spaceId} 
+				\nRef: ${data.bookingRef}
+				\n Time: ${data.timestampExpiry}`, type);
+        })      
+        .catch(err => {
+            updateStatus("Error booking disabled space", "error");
+            console.error(err);
+        });
+});
+
+
 document.getElementById("startBtn").addEventListener("click", () => {
     const entryTimestamp = new Date().toISOString();
 
