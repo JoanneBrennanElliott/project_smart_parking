@@ -308,17 +308,64 @@ document.getElementById("bookDisabledBtn").addEventListener("click", () => {
         });
 });
 
-
 document.getElementById("startBtn").addEventListener("click", () => {
+	
     const entryTimestamp = new Date().toISOString();
-
-    // Connect to Node.js bridge (Server-Sent Events)
-    //eventSource = new EventSource(`/streamTimer?entryTimestamp=${entryTimestamp}`);
-	eventSource = new EventSource(`http://localhost:3000/streamTimer?entryTimestamp=${entryTimestamp}`);
-
     const timerDisplay = document.getElementById("timerDisplay");
+	const username = document.getElementById("loginName").value.trim();
+	window.currentLoggedInUser = username;
 
-    eventSource.onmessage = (event) => {
+
+    if (!window.currentLoggedInUser) {
+        alert("Please log in before starting the timer.");
+        return;
+    }
+	
+    console.log("Starting parking timer stream…");
+
+     // Pass BOTH userId + entryTimestamp to Node
+    window.eventSource = new EventSource(
+        `/startTimer?entryTimestamp=${entryTimestamp}&userId=${window.currentLoggedInUser}`
+    );
+	
+    timerDisplay.textContent = "Starting timer…";
+
+	window.eventSource.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+
+    // Parse "Xm Ys" into seconds
+    const parts = data.timeRemaining.split(" ");
+    let minutes = parseInt(parts[0].replace("m", ""));
+    let seconds = parseInt(parts[1].replace("s", ""));
+    let remainingSeconds = minutes * 60 + seconds;
+
+    // Your total parking time (adjust if needed)
+    const totalSeconds = 30 * 60; // 30 minutes
+   // Update text
+    timerDisplay.textContent = data.timeRemaining;
+
+    // Calculate progress %
+    let percent = (remainingSeconds / totalSeconds) * 100;
+
+    // Update progress bar
+    const bar = document.getElementById("progressBar");
+    bar.style.width = percent + "%";
+
+    // Colour logic
+    if (data.nearingExpiry) {
+        bar.classList.add("warning");
+    } else {
+        bar.classList.remove("warning");
+    }
+
+    if (remainingSeconds <= 0) {
+        bar.classList.add("expired");
+    }
+};
+
+
+/*    window.eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
 
         timerDisplay.textContent = data.timeRemaining;
@@ -329,12 +376,32 @@ document.getElementById("startBtn").addEventListener("click", () => {
             timerDisplay.classList.remove("warning");
         }
     };
+*/
+      window.eventSource.onerror = () => {
+        console.log("Timer connection closed");
+        if (window.eventSource) window.eventSource.close();
+    };
 
+});
+	//Original version had this working through the bridge.js
+  	//eventSource = new EventSource(`http://localhost:3000/streamTimer?entryTimestamp=${entryTimestamp}`);
+
+ /*   eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        timerDisplay.textContent = data.timeRemaining;
+        if (data.nearingExpiry) {
+            timerDisplay.classList.add("warning");
+        } else {
+            timerDisplay.classList.remove("warning");
+        }
+    };
     eventSource.onerror = () => {
         console.log("Stream closed");
         if (eventSource) eventSource.close();
     };
-});
+*/
+
+
 
 document.getElementById("stopBtn").addEventListener("click", () => {
     if (eventSource) {
@@ -343,24 +410,7 @@ document.getElementById("stopBtn").addEventListener("click", () => {
     }
 });
 
-//Standard Parking Space
-document.getElementById("bookBtn").addEventListener("click", () => {
-    fetch("http://localhost:3000/bookSpace", 
-	{ method: "POST" })
-        .then(res => res.json())
-        .then(data => {
-			const type = data.success ? "success" : "error";
-			updateStatus(
-                `Standard Space: ${data.message}
-				\nUser: ${data.userId}
-				\nSpace: ${data.spaceId}
-				\n Time: ${data.timestampExpiry}`,type);
-        })      
-        .catch(err => {
-            updateStatus("Error booking standard space", "error");
-            console.error(err);
-        });
-});
+
 
 //Disabled Parking Space
 document.getElementById("bookDisabledBtn").addEventListener("click", () => {
