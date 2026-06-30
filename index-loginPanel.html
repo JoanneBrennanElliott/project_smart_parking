@@ -1,0 +1,26 @@
+    <div id="loginPanel">
+       <!--  <h2>Login</h2> -->
+
+        <div id="loginStatus">Please enter your login details</div>
+
+        <label for="loginName">Login Name:</label>
+        <input type="text" id="loginName" placeholder="Enter username"  value="admin">
+
+        <label for="loginPassword">Password:</label>
+        <input type="password" id="loginPassword" placeholder="Enter password"  value="1234">
+
+          <div class="permit-row">
+            <label>
+                <input type="checkbox" id="disabledAccess">
+                Disabled Parking
+            </label>
+
+            <input type="text" id="permitNumber" placeholder="Disabled access" disabled>
+            <input type="date" id="expiryDate" disabled>
+          </div>
+
+        <button id="loginBtn">Login</button>
+
+        <button id="registerBtn" disabled style="display:none; margin-top:10px;">
+        Register New User</button>
+    </div>
